@@ -1,0 +1,160 @@
+!<!DOCTYPE html>
+<html>
+<body>
+
+    <style>
+        #menu ul {
+            padding:0px;
+            margin:0px;
+            background-color:#EDEDED;
+            list-style:none;
+        }
+        #menu ul li { display: inline; }
+        
+        #menu ul li a {
+            padding: 2px 10px;
+            display: inline-block;
+        
+            /* visual do link */
+            background-color:#EDEDED;
+            color: #333;
+            text-decoration: none;
+            border-bottom:3px solid #EDEDED;
+        }
+        
+        #menu ul li a:hover {
+            background-color:#D6D6D6;
+            color: #6D6D6D;
+            border-bottom:3px solid #EA0000;
+        }
+        
+        </style>    
+        
+        <nav id="menu">
+          <ul>
+            <li><a href="./MarcarConsulta.html">Marcar consulta</a></li>
+            <li><a href="./FincanceiroMedico.html">Folha de pagamento</a></li>
+            <li><a href="./cadastrarPaciente.html">Cadastrar paciente </a></li>
+            <li><a href="./CadastarMedico.html">Cadastrar medico</a></li>
+            <li><a href="./VerConsultasPaciente.html">Historico do paciente</a></li>
+          </ul>
+        </nav>
+<h2>CADASTRAR NOVO MEDICO</h2>
+
+
+
+
+
+<form action="">
+
+  <label for="fname">NOME DO MEDICO:</label><br>
+  <input type="text" id="nome" name="fname" ></br>
+</br>
+  <label for="lname">NUMERO DO REGISTRO</label>:</label><br>
+  <input type="text" id="registro" name="lname" ><br>
+</br>
+
+
+  <div id = "listagem"> 
+ loading...
+  </div>
+
+
+
+
+
+</br>
+<label for="lname">PORCENTAGEM </label>:</label><br>
+<input type="text" id="porcentagem" name="lname" ><br><br>
+
+<label for="lname">NUMERO DE REGISTRO PARA A CLINICA </label>:</label><br>
+<input type="text" id="registroClinica" name="lname" ><br><br>
+
+  <input type="submit" value="Submit"  onClick= "event.preventDefault(); requestForm();">
+</form> 
+
+
+
+<script>
+
+    //PEGANDO TODOS OS DADOS DE OUTRAS TABELAS
+
+    let OurDataList = null; 
+  
+
+
+    fetch('http://127.0.0.1:4000/especialidade/all', { method: 'GET' })
+    .then(response => response.text())
+    .then(texto => {
+        
+        listData =   JSON.parse(texto); 
+        let OurHtmlData = `<label for="lname"> ESPECIALIDADE</label>:</label><br>
+    <input list="browsers" name="browser" id = "especialidade"> <datalist id="browsers">`; 
+    for(let i = 0; i < listData.length ; i++){
+        OurHtmlData += `<option value="${listData[i].CODIGO}" label =${listData[i].NOME}/> `;
+    }
+  
+   OurHtmlData += "</datalist>"; 
+
+
+   document.getElementById("listagem").innerHTML = OurHtmlData;
+
+
+        JSON.parse(texto)
+        console.log( JSON.parse(texto))})
+    .catch(err => console.log(err.message))
+
+
+
+    
+
+
+  const requestForm = () =>{
+
+   
+
+      console.log(`DEU TUDO CERTO \n  ${document.getElementById("nome").value} 
+      \n  ${document.getElementById("porcentagem").value}
+      ${document.getElementById("especialidade").value}
+
+      `); 
+
+
+
+
+
+(async () => 
+ { 
+
+    const rawResponse = await fetch('http://127.0.0.1:4000/medico/add', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+        body: JSON.stringify({
+   
+        NUMERO_REGISTRO: document.getElementById("registro").value,
+        NOME: document.getElementById("nome").value, 
+        ESPECIALIDADE: document.getElementById("especialidade").value,
+        PORCENTAGEM: document.getElementById("porcentagem").value,
+        REGISTRO_CLINICA : document.getElementById("registroClinica").value,
+    
+    })
+  });
+  const content = await rawResponse.json();
+
+  console.log(content);
+})();
+
+  } 
+  </script>   
+
+
+
+</body>
+
+
+
+</html>
+

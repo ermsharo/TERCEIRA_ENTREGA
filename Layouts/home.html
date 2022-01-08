@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+
+
+
+<body>
+    <h2>
+
+        Sistema da clinica medica
+    
+        
+    </h2>
+
+<div> 
+
+<a href = "#">Area Paciente</a> <br/>
+<a href = "#">Area medico</a> <br/>
+<a href = "#">Atualizar especialidades</a> </br>
+<a href = "#">Marcar consulta</a>
+</div>
+
+
+
+<script>
+
+alert("Hello");
+
+var payload = {
+    a: 1,
+    b: 2
+};
+
+var data = new FormData();
+data.append( "json", JSON.stringify( payload ) );
+
+fetch("/echo/json/",
+{
+    method: "POST",
+    body: data
+})
+.then(function(res){ return res.json(); })
+.then(function(data){ alert( JSON.stringify( data ) ) })
+
+</script>
+</body>
+
+
+
+
+</html>
