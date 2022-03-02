@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="forms.css" />
+    <title>Formcarry Base64 Form Example</title>
+  </head>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+
+    /* 
+      CONTACT FORM EXAMPLE FOR FORMCARRY
+    
+      IMPORTANT NOTE:
+      PLEASE ADD formcarryForm class to your form element
+      to apply the styles.
+    */
+
+    * {
+      box-sizing: border-box;
+
+      /* colors */
+      --color-blue: #2552d0;
+      --color-light-blue: #3266e3;
+      --color-gray: #e5e7eb;
+      --color-dark-gray: #9da3ae;
+      --color-pink: #edadd2;
+
+      /* container */
+      --c-width: 50%;
+      --c-max-width: 500px;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin: 50px 0;
+    }
+
+    .formcarryContainer {
+      width: var(--c-width);
+      max-width: var(--c-max-width);
+      display: block;
+      margin: 10vh auto 0 auto;
+    }
+
+    #formcarryForm label {
+      display: block;
+      padding: 12px 0 2px 0;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    #formcarryForm input,
+    #formcarryForm textarea {
+      font-size: 16px;
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: var(--color-gray);
+      border: none;
+      border: 4px solid var(--color-gray);
+      outline: none;
+      border-radius: 8px;
+      color: var(--color-dark-gray);
+    }
+
+    #formcarryForm input:focus,
+    #formcarryForm textarea:focus {
+      background-color: #fff;
+      color: var(--color-dark-gray);
+    }
+
+    #formcarryForm input:focus:required:invalid {
+      border-color: var(--color-pink);
+      background-color: #fff;
+    }
+
+    #formcarryForm button {
+      display: block;
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 8px;
+      background-color: var(--color-blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+
+      transition: 300ms all;
+    }
+
+    #formcarryForm button:hover {
+      background-color: var(--color-light-blue);
+    }
+
+    .formcarry-alert {
+      padding: 12px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 400;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .formcarry-alert.visible {
+      display: block;
+    }
+
+    .formcarry-alert.success {
+      background: #69cf9d;
+    }
+
+    .formcarry-alert.error {
+      background: #de524c;
+    }
+
+    .powered-by,
+    .data-holder {
+      width: var(--c-width);
+      max-width: var(--c-max-width);
+      margin: 0 auto;
+    }
+
+    .powered-by p {
+      text-align: right;
+      font-size: 11px;
+      color: #838da0;
+      padding-top: 5px;
+    }
+
+    .powered-by a {
+      font-weight: 800;
+      text-decoration: underline;
+    }
+
+    .data-holder pre {
+      max-width: 100%;
+      overflow: scroll;
+    }
+  </style>
+  <body>
+    <div class="formcarryContainer">
+      <form id="formcarryForm">
+        <label for="nameInput">Name</label>
+        <input type="text" id="nameInput" name="name" />
+
+        <label for="messageInput">Message</label>
+        <textarea
+          id="messageInput"
+          cols="30"
+          rows="2"
+          name="message"
+        ></textarea>
+
+        <label for="pictureInput">FILE</label>
+        <input type="file" id="pictureInput" name="FILE" multiple />
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <div class="powered-by">
+      <p>powered by <a href="https://formcarry.com">formcarry.</a></p>
+    </div>
+
+    <div class="data-holder">
+      <p>DATA:</p>
+      <pre id="code"></pre>
+    </div>
+
+    <script>
+      // demo purposes only
+      const codeElem = document.getElementById("code");
+      // /demo purposes only
+
+      const fileInput = document.getElementById("pictureInput");
+
+      // This is for storing the base64 strings
+      let myFiles = {};
+      // if you expect files by default, make this disabled
+      // we will wait until the last file being processed
+      let isFilesReady = true;
+
+      fileInput.addEventListener("change", async (event) => {
+        // clean up earliest items
+        myFiles = {};
+        // set state of files to false until each of them is processed
+        isFilesReady = false;
+
+        // this is to get the input name attribute, in our case it will yield as "picture"
+        // I'm doing this because I want you to use this code dynamically
+        // so if you change the input name, the result also going to effect
+        const inputKey = fileInput.getAttribute("name");
+        var files = event.srcElement.files;
+
+        const filePromises = Object.entries(files).map((item) => {
+          return new Promise((resolve, reject) => {
+            const [index, file] = item;
+            const reader = new FileReader();
+            reader.readAsBinaryString(file);
+
+            reader.onload = function (event) {
+              // if it's multiple upload field then set the object key as picture[0], picture[1]
+              // otherwise just use picture
+              const fileKey = `${inputKey}${
+                files.length > 1 ? `[${index}]` : ""
+              }`;
+              // Convert Base64 to data URI
+              // Assign it to your object
+              myFiles[fileKey] = `data:${file.type};base64,${btoa(
+                event.target.result
+              )}`;
+
+              resolve();
+            };
+            reader.onerror = function () {
+              console.log("can't read the file");
+              reject();
+            };
+          });
+        });
+
+        Promise.all(filePromises)
+          .then(() => {
+            console.log("ready to submit");
+            isFilesReady = true;
+
+            // demo purposes only
+            codeElem.textContent = JSON.stringify(myFiles, undefined, 2);
+            // /demo purposes only
+          })
+          .catch((error) => {
+            console.log(error);
+            console.log("something wrong happened");
+          });
+      });
+
+      const formElement = document.getElementById("formcarryForm");
+
+      const handleForm = async (event) => {
+        event.preventDefault();
+
+        if (!isFilesReady) {
+          console.log("files still getting processed");
+          return;
+        }
+
+        const formData = new FormData(formElement);
+
+        let data = {
+          name: formData.get("name"),
+          message: formData.get("message"),
+        };
+
+        Object.entries(myFiles).map((item) => {
+          const [key, file] = item;
+          // append the file to data object
+          data[key] = file;
+        });
+
+        // demo purposes only
+        codeElem.textContent = JSON.stringify(data, undefined, 2);
+        // /demo purposes only
+
+        alert("submit is disabled for this example.");
+        // fetch("https://formcarry.com/s/{Your-Unique-Endpoint}", {
+        //   method: "POST",
+        //   body: JSON.stringify(data),
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     Accept: "application/json"
+        //   }
+        // })
+        //   // convert response to json
+        //   .then((r) => r.json())
+        //   .then((res) => {
+        //     console.log(res);
+        //   });
+
+        ///NOSSO CODIGO AQUI
+
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        var raw = JSON.stringify({
+          id: 1,
+        });
+
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+
+        fetch("http://127.0.0.1:5000/api/sheets/send", requestOptions)
+          .then((response) => response.text())
+          .then((result) => console.log(result))
+          .catch((error) => console.log("error", error));
+      };
+
+      formElement.addEventListener("submit", handleForm);
+    </script>
+  </body>
+</html>

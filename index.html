@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <H1>Request test</H1>
+
+    <label for="avatar">Upload your csv file:</label>
+
+    <input type="file"
+           id="inputFile" name="csv input"
+           accept=".csv" />
+
+<script>
+
+
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+async function Main() {
+   const file = document.getElementById("inputFile");
+   console.log(await toBase64(file));
+}
+
+
+
+
+  
+
+
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  var raw = JSON.stringify({
+    "id": "Python",
+    "campaing_id": "Flask",
+    "upload_link": "Scotch",
+    "upload_by": "sdf",
+    "send": "sdf",
+    "delivered" : "sdf",
+    "read" : "sdf",
+    "error" : "sf",
+  });
+  var raw = JSON.stringify({
+    "id": 1,
+  });
+
+  var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+  
+ 
+    let send = () =>{
+     
+      fetch("http://127.0.0.1:5000/api/sheets/", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+  
+    }
+
+  </script>
+  <button onclick=send()>Enviar requisicao</button>
+  
+</body>
+</html>
